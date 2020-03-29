@@ -39,11 +39,14 @@ namespace MsiExtractor
 			{
 				string workingDirectory = pkg.WorkingDirectory;
 				InstallPathMap files = pkg.Files;
-				if (!files.ContainsKey(fileToExtract))
+				if (!files.TryGetValue(fileToExtract, out InstallPath installPath))
 				{
 					Console.WriteLine($"Couldn't find {fileToExtract} in msi file");
 					return 3;
 				}
+				// SourcePath is appended to the InstallPackage.WorkingDirectory and this is used as target path for the extraction.
+				// Use just the file name to extract directly to working directory.
+				installPath.SourcePath = fileToExtract;
 				pkg.ExtractFiles(new string[] { fileToExtract });
 				Console.WriteLine($"Successfully extracted {fileToExtract} to {workingDirectory}");
 			}
